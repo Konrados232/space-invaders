@@ -1,22 +1,10 @@
 //PIXI.utils.sayHello();
 
-
-var renderer = PIXI.autoDetectRenderer(512, 512, { 
-    transparent: true,
-    resolution: 1
-});
-
-document.getElementById('display').appendChild(renderer.view);
-
-
  let app = new PIXI.Application({
     width: 800, height: 600, backgroundColor: 0x5c5c5c
 });
 
 document.body.appendChild(app.view);
-
-let keys = {}
-
 
 const player = new Player();
 
@@ -37,7 +25,7 @@ document.addEventListener('keyup', function(e) {
         player.stop();
     }
     if (e.key === 'ArrowLeft') {
-        player.st();
+        player.stop();
     }
 });
 
@@ -46,12 +34,34 @@ app.ticker.add((delta) => {
 });
 
 
+const enemy = new Enemy(50, 50);
 
-const enemy = PIXI.Sprite.from('assets/a.png');
-enemy.anchor.set(0.5);
-enemy.x = 50;
-enemy.y = 50;
-enemy.width = 100;
-enemy.height = 50;
+app.stage.addChild(enemy.getSprite());
 
-app.stage.addChild(enemy);
+let seconds = 0;
+
+app.ticker.add((delta) => {
+    seconds += (1/60) * delta;
+    if (seconds >= 2) {
+        enemy.moveStepRight();
+        seconds = 0;
+    }
+});
+
+let appWidth = app.screen.width;
+console.log(appWidth);
+
+const enemyGroup = new EnemyGroup(0, 0, 800);
+
+app.stage.addChild(enemyGroup.getContainer());
+
+let seconds1 = 0;
+
+app.ticker.add((delta) => {
+    //enemyGroup.getContainer().rotation -= 0.01 * delta;
+    seconds1 += (1/60) * delta;
+    if (seconds1 >= 2) {
+        enemyGroup.moveStepRight();
+        seconds1 = 0;
+    }
+});
