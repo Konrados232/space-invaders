@@ -7,6 +7,10 @@ class Player {
         this.player.width = 100;
         this.player.height = 100;
         this.player.interactive = true;
+        this.collision = new CollisionBox(this.player.x - (this.player.width / 2),
+                                          this.player.x + (this.player.width / 2),
+                                          this.player.y - (this.player.height / 2),
+                                          this.player.y + (this.player.height / 2));
         this.speed = 0;
         this.maxSpeed = 4;
     }
@@ -29,6 +33,10 @@ class Player {
 
     getSprite() {
         return this.player;
+    }
+
+    get collision() {
+        return this._collision;
     }
     
 }

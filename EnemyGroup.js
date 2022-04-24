@@ -3,14 +3,13 @@ class EnemyGroup {
         this.container = new PIXI.Container();
         this.container.x = x;
         this.container.y = y;
-        this.container.height = 50;
         this.container.pivot.x = 0;
         this.container.pivot.y = 0;
+        this.groupHeight = 50;
+        this.collision = new CollisionBox(x, x + (appWidth - 200), y, y + this.groupHeight);
         this.maxEnemyCount = 5;
         this.currentEnemyCount = 5;
         this.enemyList = [];
-        this.rightFurthestPoint = this.container.x + (appWidth - 200);
-        this.leftFurthestPoint = this.container.x;
         this.moveStep = 10;
 
         for (let i = 0; i < this.maxEnemyCount; i++) {
@@ -29,9 +28,11 @@ class EnemyGroup {
         this.container.x += this.moveStep;
     }
 
-
-
     getContainer() {
         return this.container;
+    }
+
+    get collision() {
+        return this._collision;
     }
 }

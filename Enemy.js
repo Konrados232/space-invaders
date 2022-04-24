@@ -6,6 +6,10 @@ class Enemy {
         this.enemy.y = y;
         this.enemy.width = 100;
         this.enemy.height = 50;
+        this.collision = new CollisionBox(this.enemy.x - (this.enemy.width / 2),
+                                          this.enemy.x + (this.enemy.width / 2),
+                                          this.enemy.y - (this.enemy.height / 2),
+                                          this.enemy.y + (this.enemy.height / 2));
         this.moveStep = 10;
         this.descendStep = 40;
         this.currentDirection = 1;
@@ -33,6 +37,10 @@ class Enemy {
 
     getSprite() {
         return this.enemy;
+    }
+
+    get collision() {
+        return this._collision;
     }
     
 }
