@@ -11,6 +11,8 @@ class EnemyGroup {
         this.currentEnemyCount = 5;
         this.enemyList = [];
         this.moveStep = 10;
+        
+    
 
         for (let i = 0; i < this.maxEnemyCount; i++) {
             const enemy = new Enemy(i * 125, 0);
@@ -34,5 +36,9 @@ class EnemyGroup {
 
     get collision() {
         return this._collision;
+    }
+
+    set collision(col) {
+        this._collision = col;
     }
 }

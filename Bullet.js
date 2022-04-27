@@ -14,8 +14,17 @@ class Bullet {
         this.maxSpeed = 5;
     }
 
+    changePos(x, y) {
+        this.bullet.x = x;
+        this.bullet.y = y;
+    }
+
     moveUp() {
         this.speed = -this.maxSpeed;
+    }
+
+    stop() {
+        this.speed = 0;
     }
 
     update(delta) {
@@ -28,5 +37,9 @@ class Bullet {
 
     get collision() {
         return this._collision;
+    }
+
+    set collision(col) {
+        this._collision = col;
     }
 }

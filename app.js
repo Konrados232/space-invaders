@@ -1,42 +1,37 @@
 //PIXI.utils.sayHello();
 
- let app = new PIXI.Application({
+let app = new PIXI.Application({
     width: 800, height: 600, backgroundColor: 0x5c5c5c
 });
 
 document.body.appendChild(app.view);
 
+// load objects
+
 const player = new Player();
+
+const bulletController = new Batch(20, app.ticker);
+
+const enemyGroup = new EnemyGroup(0, 0, 800);
+
+const enemy = new Enemy(400, 550);
+
+
+// load sprites on stage
 
 app.stage.addChild(player.getSprite());
 
+app.stage.addChild(enemy.getSprite());
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowRight') {
-        player.moveRight();
-    }
-    if (e.key === 'ArrowLeft') {
-        player.moveLeft();
-    }
-});
+app.stage.addChild(enemyGroup.getContainer());
 
-document.addEventListener('keyup', function(e) {
-    if (e.key === 'ArrowRight') {
-        player.stop();
-    }
-    if (e.key === 'ArrowLeft') {
-        player.stop();
-    }
-});
+
+// update logic
 
 app.ticker.add((delta) => {
     player.update(delta);
 });
 
-
-const enemy = new Enemy(50, 50);
-
-app.stage.addChild(enemy.getSprite());
 
 let seconds = 0;
 
@@ -48,13 +43,6 @@ app.ticker.add((delta) => {
     }
 });
 
-let appWidth = app.screen.width;
-console.log(appWidth);
-
-const enemyGroup = new EnemyGroup(0, 0, 800);
-
-app.stage.addChild(enemyGroup.getContainer());
-
 let seconds1 = 0;
 
 app.ticker.add((delta) => {
@@ -63,5 +51,61 @@ app.ticker.add((delta) => {
     if (seconds1 >= 2) {
         enemyGroup.moveStepRight();
         seconds1 = 0;
+    }
+
+    if (isObjectWithinCollision(player.collision, enemy.collision)) {
+        console.log("amongus");
+    }
+
+});
+
+// functions
+
+function isObjectWithinCollision(objectCollision, boxCollision) {
+    if (objectCollision.top > boxCollision.top && objectCollision.bottom < boxCollision.bottom) {
+        // object doesn't need to be fully within box, it needs to partially stick on one of the sides
+        if (objectCollision.right > boxCollision.left && objectCollision.left < boxCollision.right) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+
+function shoot(coords) {
+    let x = coords[0];
+    let y = coords[1];
+    console.log("x " + x);
+    console.log("y " + y);
+
+    let currentBullet = bulletController.getNextObject();
+
+    currentBullet.changePos(x,y);
+    currentBullet.stop();
+    app.stage.addChild(currentBullet.getSprite());
+    currentBullet.moveUp();
+}
+
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') {
+        player.moveRight();
+    }
+    if (e.key === 'ArrowLeft') {
+        player.moveLeft();
+    }
+    if (e.key === 'ArrowUp') {
+        shoot(player.getCords());
+    }
+});
+
+document.addEventListener('keyup', function(e) {
+    if (e.key === 'ArrowRight') {
+        player.stop();
+    }
+    if (e.key === 'ArrowLeft') {
+        player.stop();
     }
 });

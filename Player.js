@@ -1,5 +1,6 @@
 class Player {
     constructor() {
+        
         this.player = PIXI.Sprite.from('assets/sample.png');
         this.player.anchor.set(0.5);
         this.player.x = app.screen.width / 2;
@@ -28,15 +29,27 @@ class Player {
     }
 
     update(delta) {
-        this.player.x += this.speed * delta; 
+        this.player.x += this.speed * delta;
+        this.collision.updateCollision(this.player.x - (this.player.width / 2),
+                                        this.player.x + (this.player.width / 2),
+                                        this.player.y - (this.player.height / 2),
+                                        this.player.y + (this.player.height / 2));
     }
-
+    
     getSprite() {
         return this.player;
     }
 
+    getCords() {
+        return [this.player.x, this.player.y];
+    }
+    
     get collision() {
         return this._collision;
+    }
+    
+    set collision(col) {
+        this._collision = col;
     }
     
 }

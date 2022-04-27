@@ -43,4 +43,7 @@ class Enemy {
         return this._collision;
     }
     
+    set collision(col) {
+        this._collision = col;
+    }
 }
