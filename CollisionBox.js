@@ -1,4 +1,4 @@
-class CollisionBox {
+export class CollisionBox {
     constructor(left, right, top, bottom) {
         this.left = left;
         this.right = right;

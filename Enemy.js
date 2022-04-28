@@ -1,6 +1,10 @@
-class Enemy {
-    constructor(x, y) {
-        this.enemy = PIXI.Sprite.from('assets/a.png');
+import { CollisionBox } from './CollisionBox.js';
+import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+
+
+export class Enemy {
+    constructor(x, y, sprite) {
+        this.enemy = Sprite.from('assets/a.png');
         this.enemy.anchor.set(0.5);
         this.enemy.x = x;
         this.enemy.y = y;

@@ -1,10 +1,12 @@
-class Player {
-    constructor() {
-        
-        this.player = PIXI.Sprite.from('assets/sample.png');
+import { CollisionBox } from './CollisionBox.js';
+import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+
+export class Player {
+    constructor(x, y) {
+        this.player = Sprite.from('assets/sample.png');
         this.player.anchor.set(0.5);
-        this.player.x = app.screen.width / 2;
-        this.player.y = app.screen.height - 40;
+        this.player.x = x;
+        this.player.y = y;
         this.player.width = 100;
         this.player.height = 100;
         this.player.interactive = true;

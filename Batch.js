@@ -1,14 +1,14 @@
-class Batch {
-    constructor(size, ticker) {
+import { CollisionBox } from './CollisionBox.js';
+import { Bullet } from './Bullet.js';
+
+
+export class Batch {
+    constructor(size) {
         this.size = size
         this.array = []
         for (let i = 0; i < size; i++) {
             this.array.push(new Bullet(0,0));
-            ticker.add((delta) => {
-                this.array[i].update(delta);
-            });
         }
-      
         this.currentIterator = 0;
     }
     
