@@ -1,10 +1,10 @@
 import { Bullet } from './Bullet.js';
 import { Enemy } from './Enemy.js';
 import { CollisionBox } from './CollisionBox.js';
-import { Container } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Container, Point, Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class EnemyGroup {
-    constructor(x, y, appWidth, defaultSprite) {
+    constructor(x, y, appWidth) {
         this.container = new Container();
         this.container.x = x;
         this.container.y = y;
@@ -12,33 +12,43 @@ export class EnemyGroup {
         this.container.pivot.y = 0;
         this.groupHeight = 50;
         this.appWidth = appWidth;
-        this.collision = new CollisionBox(x, x + (appWidth - 200), y, y + this.groupHeight);
+        this.bottomLeft = new Point(this.container.x, this.container.y + this.groupHeight);
+        this.bottomRight = new Point(this.container.x + (this.appWidth - 200), this.container.y + this.groupHeight);
         this.maxEnemyCount = 5;
-        this.currentEnemyCount = 5;
-        this.enemyList = [];
         this.moveStep = 10;
+        this.moveStepDown = 30;
+        this.direction = 1;
 
         for (let i = 0; i < this.maxEnemyCount; i++) {
-            const enemy = new Enemy(i * 125, 0, defaultSprite);
-            enemy.getSprite().anchor.set(0);
-            this.enemyList.push(enemy);
-            this.container.addChild(enemy.getSprite());
+            const enemy = Sprite.from('assets/a.png');
+            enemy.anchor.set(0);
+            enemy.x = i * 125;
+            enemy.y = 0;
+            enemy.width = 100;
+            enemy.height = 50;
+            this.container.addChild(enemy);
         }
     }
 
-    moveStepLeft() {
-        this.container.x -= this.moveStep;
+    moveOneStep() {
+        this.container.x += this.moveStep * this.direction;
         this.updateCollision();
     }
 
-    moveStepRight() {
-        this.container.x += this.moveStep;
+    changeDirection() {
+        this.direction = -this.direction;
+    }
+
+    moveOneStepDown() {
+        this.container.y += this.moveStepDown;
         this.updateCollision();
     }
 
     updateCollision() {
-        this.collision.updateCollision(this.container.x, this.container.x + (this.appWidth - 200),
-                                        this.container.y, this.container.y + this.groupHeight);
+        this.bottomLeft.set(this.container.x, this.container.y + this.groupHeight);
+        this.bottomRight.set(this.container.x + (this.appWidth - 200), this.container.y + this.groupHeight);
+        console.log(this.bottomLeft);
+        console.log(this.bottomRight);
     }
 
     deleteEnemy(enemy) {

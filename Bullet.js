@@ -1,5 +1,5 @@
 import { CollisionBox } from './CollisionBox.js';
-import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Sprite, Point } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Bullet {
     constructor(x, y, sprite) {
@@ -9,6 +9,10 @@ export class Bullet {
         this.bullet.y = y;
         this.bullet.width = 30;
         this.bullet.height = 10;
+        this.offsetFromCenter = this.bullet.width / 2;
+        this.topLeft = new Point(this.bullet.x - this.offsetFromCenter, this.bullet.y);
+        this.topRight = new Point(this.bullet.x + this.offsetFromCenter, this.bullet.y);
+        
         this.collision = new CollisionBox(this.bullet.x - (this.bullet.width / 2),
                                           this.bullet.x + (this.bullet.width / 2),
                                           this.bullet.y - (this.bullet.height / 2),
@@ -32,11 +36,12 @@ export class Bullet {
 
     update(delta) {
         this.bullet.y += this.speed * delta;
-        this.collision.updateCollision(this.bullet.x - (this.bullet.width / 2),
-                                        this.bullet.x + (this.bullet.width / 2),
-                                        this.bullet.y - (this.bullet.height / 2),
-                                        this.bullet.y + (this.bullet.height / 2));
+        this.updatePoints();
+    }
 
+    updatePoints() {
+        this.topLeft.set(this.bullet.x - this.offsetFromCenter, this.bullet.y);
+        this.topRight.set(this.bullet.x + this.offsetFromCenter, this.bullet.y);
     }
 
     getSprite() {

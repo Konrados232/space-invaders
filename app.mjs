@@ -4,11 +4,14 @@ import { Player } from './Player.js';
 import { Batch } from './Batch.js';
 import { EnemyGroup } from './EnemyGroup.js';
 import { Enemy } from './Enemy.js';
+//import { EnemyGroupController } from './EnemyGroupController';
 
-
-import { Application, Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Application, Sprite, Container } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { EnemyGroupController } from './EnemyGroupController.js';
+
+
 
 const app = new Application({
     width: 800, height: 600, backgroundColor: 0x5c5c5c
@@ -26,20 +29,24 @@ const player = new Player(app.screen.width / 2, app.screen.height - 40, playerSp
 
 const bulletController = new Batch(20, defaultSprite);
 
-const enemyGroup = new EnemyGroup(0, 0, 800, defaultSprite);
+const enemyGroupController = new EnemyGroupController(0, 0, 75, 3);
 
-const enemy = new Enemy(400, 550, defaultSprite);
+//const enemyGroup = new EnemyGroup(0, 0, 800);
+
+//const enemy = new Enemy(400, 550, defaultSprite);
 
 
 // load sprites on stage
 
 app.stage.addChild(player.getSprite());
 
-app.stage.addChild(enemy.getSprite());
+//app.stage.addChild(enemy.getSprite());
 
-app.stage.addChild(enemyGroup.getContainer());
+//app.stage.addChild(enemyGroup.getContainer());
 
-
+enemyGroupController.enemyGroupList.forEach(element => {
+    app.stage.addChild(element.getContainer());
+});
 
 
 // update logic
@@ -49,13 +56,19 @@ app.ticker.add((delta) => {
     player.update(delta);
     updateEnemy(delta);
     updateBullets(delta);
-    updateEnemyGroup(delta);
-
-    console.log(enemyGroup.getContainer().x);
-    console.log(enemyGroup.getContainer().y);
+    updateEnemyGroups(delta);
 
     // check collisions
-    checkEveryBulletCollision();
+    enemyGroupController.enemyGroupList.forEach(enemyGroup => {
+        checkEveryBulletCollision(enemyGroup);
+    })
+    //checkEveryBulletCollision();
+
+    // check game logic
+
+    if (enemyGroupController.isEmpty()) {
+        console.log("XD");
+    }
 
     // check out of the box objects
     checkEveryBullet();
@@ -70,18 +83,18 @@ function updateEnemy(delta) {
     seconds += (1/60) * delta;
     
     if (seconds >= 2) {
-            enemy.moveStepRight();
+            //enemy.moveStepRight();
             seconds = 0;
     }
 }
 
 let seconds1 = 0;
 
-function updateEnemyGroup(delta) {
+function updateEnemyGroups(delta) {
     //enemyGroup.getContainer().rotation -= 0.01 * delta;
     seconds1 += (1/60) * delta;
-    if (seconds1 >= 2) {
-        enemyGroup.moveStepRight();
+    if (seconds1 >= 1) {
+        enemyGroupController.update();
         seconds1 = 0;
     }
 }
@@ -95,39 +108,35 @@ function updateBullets(delta) {
 
 // collision functions
 
-function checkEveryEnemyCollision(bullet) {
-    console.log("susus");
-    console.log(bullet.bullet.x + "X");
-    console.log(bullet.bullet.y + "Y");
-    let bulletPoint = new PIXI.Point(bullet.bullet.x, bullet.bullet.y);
-    enemyGroup.enemyList.forEach(enemy => {
-        if (enemy.getSprite().containsPoint(bulletPoint)) {
-            console.log("XDD");
-            enemyGroup.deleteEnemy(enemy);
+function checkEveryEnemyCollision(bullet, enemyGroup) {
+    enemyGroup.container.children.forEach(enemy => {
+        if (enemy.containsPoint(bullet.topLeft) || enemy.containsPoint(bullet.topRight)) {
+            enemyGroup.container.removeChild(enemy);
+            enemyGroupController.decreaseEnemyCount();
             resetBullet(bullet);
         }
     });
 }
 
 
-function checkEveryBulletCollision() {
-    bulletController.array.forEach(element => {
-        if(isObjectWithinCollision(element.collision, enemyGroup.collision)) {
-            checkEveryEnemyCollision(element);
+function checkEveryBulletCollision(enemyGroup) {
+    bulletController.array.forEach(bullet => {
+        if (isObjectInsideContainer(bullet.topLeft, bullet.topRight, enemyGroup.bottomLeft, enemyGroup.bottomRight)) {
+            checkEveryEnemyCollision(bullet, enemyGroup);
         }
     });
 }
 
-function isObjectWithinCollision(objectCollision, boxCollision) {
-    if (objectCollision.top > boxCollision.top && objectCollision.bottom < boxCollision.bottom) {
-        // object doesn't need to be fully within box, it needs to partially stick on one of the sides
-        if (objectCollision.right > boxCollision.left && objectCollision.left < boxCollision.right) {
+
+function isObjectInsideContainer(bulletTopLeft, bulletTopRight, containerBottomLeft, containerBottomRight) {
+    if (bulletTopLeft.y <= containerBottomLeft.y) {
+        if (bulletTopLeft.x >= containerBottomLeft.x || bulletTopRight.x <= containerBottomRight) {
             return true;
         }
     }
-
     return false;
 }
+
 
 // out of the box functions
 function checkEveryBullet() {
