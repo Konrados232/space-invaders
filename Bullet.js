@@ -3,7 +3,7 @@ import { Sprite, Point } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Bullet {
     constructor(x, y, sprite) {
-        this.bullet = Sprite.from('assets/a.png');
+        this.bullet = Sprite.from('assets/bullet.png');
         this.bullet.anchor.set(0.5);
         this.bullet.x = x;
         this.bullet.y = y;

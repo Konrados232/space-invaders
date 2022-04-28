@@ -2,15 +2,11 @@
 
 import { Player } from './Player.js';
 import { Batch } from './Batch.js';
-import { EnemyGroup } from './EnemyGroup.js';
-import { Enemy } from './Enemy.js';
-//import { EnemyGroupController } from './EnemyGroupController';
-
-import { Application, Sprite, Container } from './node_modules/pixi.js/dist/browser/pixi.mjs';
-
-import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
 import { EnemyGroupController } from './EnemyGroupController.js';
 
+import { Application, Sprite, Text } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+
+import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 
 const app = new Application({
@@ -22,39 +18,84 @@ document.body.appendChild(app.view);
 // load sprites
 const playerSprite = Sprite.from('assets/sample.png');
 const defaultSprite = Sprite.from('assets/a.png');
+const backgroundSprite = Sprite.from('assets/background.png')
 
 // load objects
 
-const player = new Player(app.screen.width / 2, app.screen.height - 40, playerSprite);
+backgroundSprite.height = 1920;
+backgroundSprite.width = 1058;
+backgroundSprite.x = 400;
+backgroundSprite.y = 300;
+backgroundSprite.anchor.set(0.5);
+
+const player = new Player(app.screen.width / 2, app.screen.height - 45, playerSprite);
 
 const bulletController = new Batch(20, defaultSprite);
 
 const enemyGroupController = new EnemyGroupController(0, 0, 75, 3);
 
-//const enemyGroup = new EnemyGroup(0, 0, 800);
+const scoreText = new Text('E L: 15/15',{fontFamily : 'Arial', fontSize: 20, fill : 0xffffff, align : 'center'});
+scoreText.x = 10;
+scoreText.y = 575;
 
-//const enemy = new Enemy(400, 550, defaultSprite);
 
 
 // load sprites on stage
+app.stage.addChild(backgroundSprite);
 
 app.stage.addChild(player.getSprite());
-
-//app.stage.addChild(enemy.getSprite());
-
-//app.stage.addChild(enemyGroup.getContainer());
 
 enemyGroupController.enemyGroupList.forEach(element => {
     app.stage.addChild(element.getContainer());
 });
 
+app.stage.addChild(scoreText);
+
+
+// end credits
+let frame = new PIXI.Graphics();
+frame.beginFill(0x666666);
+frame.lineStyle({ color: 0xffffff, width: 4, alignment: 0 });
+frame.drawRect(0, 0, 208, 208);
+frame.position.set(400 - 100, 300 - 100);
+
+
+let mask = new PIXI.Graphics();
+mask.beginFill(0xffffff);
+mask.drawRect(0,0,200,200);
+mask.endFill();
+
+
+let maskContainer = new PIXI.Container();
+maskContainer.mask = mask;
+maskContainer.addChild(mask);
+maskContainer.position.set(4,4);
+
+
+const response = await fetch('gameEndText.txt');
+const data = await response.text();
+console.log(data);
+
+let endScreenText = new PIXI.Text(
+    data,
+    {
+      fontSize: 40,
+      fill: 0x1010ff,
+      wordWrap: true,
+      wordWrapWidth: 180
+    }
+);
+endScreenText.x = 10;
+
+let elapsed = 0.0;
 
 // update logic
-
 app.ticker.add((delta) => {
+    // update background
+    backgroundSprite.rotation += 0.005 * Math.cos(elapsed / 100.0) * delta;
+
     // update positions
     player.update(delta);
-    updateEnemy(delta);
     updateBullets(delta);
     updateEnemyGroups(delta);
 
@@ -62,12 +103,16 @@ app.ticker.add((delta) => {
     enemyGroupController.enemyGroupList.forEach(enemyGroup => {
         checkEveryBulletCollision(enemyGroup);
     })
-    //checkEveryBulletCollision();
 
     // check game logic
-
     if (enemyGroupController.isEmpty()) {
-        console.log("XD");
+        app.stage.addChild(frame);
+        frame.addChild(maskContainer);
+        maskContainer.addChild(endScreenText);
+
+        elapsed += delta;
+        endScreenText.y = -450 + Math.cos(elapsed / 100.0) * 450.0;
+
     }
 
     // check out of the box objects
@@ -79,23 +124,12 @@ app.ticker.add((delta) => {
 
 let seconds = 0;
 
-function updateEnemy(delta) {
-    seconds += (1/60) * delta;
-    
-    if (seconds >= 2) {
-            //enemy.moveStepRight();
-            seconds = 0;
-    }
-}
-
-let seconds1 = 0;
-
 function updateEnemyGroups(delta) {
     //enemyGroup.getContainer().rotation -= 0.01 * delta;
-    seconds1 += (1/60) * delta;
-    if (seconds1 >= 1) {
+    seconds += (1/60) * delta;
+    if (seconds >= 1) {
         enemyGroupController.update();
-        seconds1 = 0;
+        seconds = 0;
     }
 }
 
@@ -113,6 +147,7 @@ function checkEveryEnemyCollision(bullet, enemyGroup) {
         if (enemy.containsPoint(bullet.topLeft) || enemy.containsPoint(bullet.topRight)) {
             enemyGroup.container.removeChild(enemy);
             enemyGroupController.decreaseEnemyCount();
+            updateScore();
             resetBullet(bullet);
         }
     });
@@ -148,10 +183,21 @@ function checkEveryBullet() {
 }
 
 function resetBullet(element) {
-    console.log("lmao");
     app.stage.removeChild(element.getSprite());
     element.stop();
     element.changePos(-100,-100);
+}
+
+
+// text functions
+
+function updateScore() {
+    let currentCount = enemyGroupController.enemyGroupWholeCount;
+    scoreText.text = "E L: " + currentCount + " / 15";
+
+    if (currentCount === 0) {
+        scoreText.text = "yay";
+    }
 }
 
 
@@ -159,8 +205,6 @@ function resetBullet(element) {
 function shoot(coords) {
     let x = coords[0];
     let y = coords[1];
-    console.log("x " + x);
-    console.log("y " + y);
 
     let currentBullet = bulletController.getNextObject();
 
