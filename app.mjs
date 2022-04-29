@@ -1,13 +1,14 @@
-//PIXI.utils.sayHello();
+import { Application, Sprite, Graphics, Container, Text } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 import { Player } from './Player.js';
 import { Batch } from './Batch.js';
 import { EnemyGroupController } from './EnemyGroupController.js';
+import { Background } from './Background.js';
+import { TextController } from './TextController.js';
+import { InputController } from './InputController.js';
 
-import { Application, Sprite, Text } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
-
 
 const app = new Application({
     width: 800, height: 600, backgroundColor: 0x5c5c5c
@@ -18,65 +19,50 @@ document.body.appendChild(app.view);
 // load sprites
 const playerSprite = Sprite.from('assets/sample.png');
 const defaultSprite = Sprite.from('assets/a.png');
-const backgroundSprite = Sprite.from('assets/background.png')
 
 // load objects
-
-backgroundSprite.height = 1920;
-backgroundSprite.width = 1058;
-backgroundSprite.x = 400;
-backgroundSprite.y = 300;
-backgroundSprite.anchor.set(0.5);
-
 const player = new Player(app.screen.width / 2, app.screen.height - 45, playerSprite);
-
 const bulletController = new Batch(20, defaultSprite);
-
 const enemyGroupController = new EnemyGroupController(0, 0, 75, 3);
-
-const scoreText = new Text('E L: 15/15',{fontFamily : 'Arial', fontSize: 20, fill : 0xffffff, align : 'center'});
-scoreText.x = 10;
-scoreText.y = 575;
-
-
+const background = new Background();
+const scoreText = new TextController(10, 575);
+const inputController = new InputController(player);
 
 // load sprites on stage
-app.stage.addChild(backgroundSprite);
+app.stage.addChild(background.sprite);
 
-app.stage.addChild(player.getSprite());
+app.stage.addChild(player.sprite);
 
 enemyGroupController.enemyGroupList.forEach(element => {
-    app.stage.addChild(element.getContainer());
+    app.stage.addChild(element.container);
 });
 
-app.stage.addChild(scoreText);
+console.log(scoreText.text);
+
+app.stage.addChild(scoreText.text);
 
 
 // end credits
-let frame = new PIXI.Graphics();
+let frame = new Graphics();
 frame.beginFill(0x666666);
 frame.lineStyle({ color: 0xffffff, width: 4, alignment: 0 });
 frame.drawRect(0, 0, 208, 208);
 frame.position.set(400 - 100, 300 - 100);
 
-
-let mask = new PIXI.Graphics();
+let mask = new Graphics();
 mask.beginFill(0xffffff);
 mask.drawRect(0,0,200,200);
 mask.endFill();
 
-
-let maskContainer = new PIXI.Container();
+let maskContainer = new Container();
 maskContainer.mask = mask;
 maskContainer.addChild(mask);
 maskContainer.position.set(4,4);
 
-
 const response = await fetch('gameEndText.txt');
 const data = await response.text();
-console.log(data);
 
-let endScreenText = new PIXI.Text(
+let endScreenText = new Text(
     data,
     {
       fontSize: 40,
@@ -92,7 +78,7 @@ let elapsed = 0.0;
 // update logic
 app.ticker.add((delta) => {
     // update background
-    backgroundSprite.rotation += 0.005 * Math.cos(elapsed / 100.0) * delta;
+    background.rotate(delta, elapsed);
 
     // update positions
     player.update(delta);
@@ -125,7 +111,6 @@ app.ticker.add((delta) => {
 let seconds = 0;
 
 function updateEnemyGroups(delta) {
-    //enemyGroup.getContainer().rotation -= 0.01 * delta;
     seconds += (1/60) * delta;
     if (seconds >= 1) {
         enemyGroupController.update();
@@ -141,14 +126,13 @@ function updateBullets(delta) {
 
 
 // collision functions
-
 function checkEveryEnemyCollision(bullet, enemyGroup) {
     enemyGroup.container.children.forEach(enemy => {
         if (enemy.containsPoint(bullet.topLeft) || enemy.containsPoint(bullet.topRight)) {
             enemyGroup.container.removeChild(enemy);
-            enemyGroupController.decreaseEnemyCount();
-            updateScore();
             resetBullet(bullet);
+            enemyGroupController.decreaseEnemyCount();
+            scoreText.update(enemyGroupController.enemyGroupWholeCount);
         }
     });
 }
@@ -176,30 +160,17 @@ function isObjectInsideContainer(bulletTopLeft, bulletTopRight, containerBottomL
 // out of the box functions
 function checkEveryBullet() {
     bulletController.array.forEach(element => {
-        if (element.bullet.y <= -200) {
+        if (element.sprite.y <= -200) {
             resetBullet(element);
         }
     });
 }
 
 function resetBullet(element) {
-    app.stage.removeChild(element.getSprite());
+    app.stage.removeChild(element.sprite);
     element.stop();
     element.changePos(-100,-100);
 }
-
-
-// text functions
-
-function updateScore() {
-    let currentCount = enemyGroupController.enemyGroupWholeCount;
-    scoreText.text = "E L: " + currentCount + " / 15";
-
-    if (currentCount === 0) {
-        scoreText.text = "yay";
-    }
-}
-
 
 
 function shoot(coords) {
@@ -210,7 +181,7 @@ function shoot(coords) {
 
     currentBullet.changePos(x,y);
     currentBullet.stop();
-    app.stage.addChild(currentBullet.getSprite());
+    app.stage.addChild(currentBullet.sprite);
     currentBullet.moveUp();
 }
 
@@ -235,4 +206,3 @@ document.addEventListener('keyup', function(e) {
         player.stop();
     }
 });
-

@@ -1,4 +1,3 @@
-import { CollisionBox } from './CollisionBox.js';
 import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Player {
@@ -10,7 +9,7 @@ export class Player {
         this.sprite.width = 100;
         this.sprite.height = 100;
         this.sprite.interactive = true;
-        
+
         this.speed = 0;
         this.maxSpeed = 4;
     }

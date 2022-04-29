@@ -1,6 +1,4 @@
-import { CollisionBox } from './CollisionBox.js';
 import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
-
 
 export class Enemy {
     constructor(x, y, sprite) {

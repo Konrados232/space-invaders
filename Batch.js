@@ -1,6 +1,4 @@
-import { CollisionBox } from './CollisionBox.js';
 import { Bullet } from './Bullet.js';
-
 
 export class Batch {
     constructor(size) {
