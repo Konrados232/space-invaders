@@ -1,22 +1,21 @@
-import { Bullet } from './Bullet.js';
-import { Enemy } from './Enemy.js';
-import { CollisionBox } from './CollisionBox.js';
 import { Container, Point, Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class EnemyGroup {
-    constructor(x, y, appWidth) {
+    constructor(x, y, leftBorder, rightBorder) {
         this.container = new Container();
         this.container.x = x;
         this.container.y = y;
         this.container.pivot.x = 0;
         this.container.pivot.y = 0;
+
         this.groupHeight = 50;
-        this.appWidth = appWidth;
+        this.leftBorder = leftBorder;
+        this.rightBorder = rightBorder;
         this.bottomLeft = new Point(this.container.x, this.container.y + this.groupHeight);
-        this.bottomRight = new Point(this.container.x + (this.appWidth - 200), this.container.y + this.groupHeight);
+        this.bottomRight = new Point(this.container.x + (this.rightBorder - 200), this.container.y + this.groupHeight);
         this.maxEnemyCount = 5;
-        this.moveStep = 10;
-        this.moveStepDown = 30;
+        this.moveStepHorizontally = 10;
+        this.moveStepVertically = 30;
         this.direction = 1;
 
         for (let i = 0; i < this.maxEnemyCount; i++) {
@@ -31,7 +30,7 @@ export class EnemyGroup {
     }
 
     moveOneStep() {
-        this.container.x += this.moveStep * this.direction;
+        this.container.x += this.moveStepHorizontally * this.direction;
         this.updateCollision();
     }
 
@@ -40,15 +39,13 @@ export class EnemyGroup {
     }
 
     moveOneStepDown() {
-        this.container.y += this.moveStepDown;
+        this.container.y += this.moveStepVertically;
         this.updateCollision();
     }
 
     updateCollision() {
         this.bottomLeft.set(this.container.x, this.container.y + this.groupHeight);
-        this.bottomRight.set(this.container.x + (this.appWidth - 200), this.container.y + this.groupHeight);
-        console.log(this.bottomLeft);
-        console.log(this.bottomRight);
+        this.bottomRight.set(this.container.x + (this.rightBorder - 200), this.container.y + this.groupHeight);
     }
 
     deleteEnemy(enemy) {
@@ -57,8 +54,12 @@ export class EnemyGroup {
         this.container.removeChild(enemy.getSprite());
     }
 
-    getContainer() {
-        return this.container;
+    get container() {
+        return this._container;
+    }
+
+    set container(con) {
+        this._container = con;
     }
 
     get collision() {

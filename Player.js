@@ -3,17 +3,14 @@ import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Player {
     constructor(x, y) {
-        this.player = Sprite.from('assets/sample.png');
-        this.player.anchor.set(0.5);
-        this.player.x = x;
-        this.player.y = y;
-        this.player.width = 100;
-        this.player.height = 100;
-        this.player.interactive = true;
-        this.collision = new CollisionBox(this.player.x - (this.player.width / 2),
-                                          this.player.x + (this.player.width / 2),
-                                          this.player.y - (this.player.height / 2),
-                                          this.player.y + (this.player.height / 2));
+        this.sprite = Sprite.from('assets/sample.png');
+        this.sprite.anchor.set(0.5);
+        this.sprite.x = x;
+        this.sprite.y = y;
+        this.sprite.width = 100;
+        this.sprite.height = 100;
+        this.sprite.interactive = true;
+        
         this.speed = 0;
         this.maxSpeed = 4;
     }
@@ -31,27 +28,19 @@ export class Player {
     }
 
     update(delta) {
-        this.player.x += this.speed * delta;
-        this.collision.updateCollision(this.player.x - (this.player.width / 2),
-                                        this.player.x + (this.player.width / 2),
-                                        this.player.y - (this.player.height / 2),
-                                        this.player.y + (this.player.height / 2));
+        this.sprite.x += this.speed * delta;
     }
     
-    getSprite() {
-        return this.player;
+    getCords() {
+        return [this.sprite.x, this.sprite.y];
     }
 
-    getCords() {
-        return [this.player.x, this.player.y];
+    get sprite() {
+        return this._sprite;
     }
-    
-    get collision() {
-        return this._collision;
-    }
-    
-    set collision(col) {
-        this._collision = col;
+
+    set sprite(spr) {
+        this._sprite = spr;
     }
     
 }

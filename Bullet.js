@@ -1,29 +1,24 @@
-import { CollisionBox } from './CollisionBox.js';
 import { Sprite, Point } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Bullet {
-    constructor(x, y, sprite) {
-        this.bullet = Sprite.from('assets/bullet.png');
-        this.bullet.anchor.set(0.5);
-        this.bullet.x = x;
-        this.bullet.y = y;
-        this.bullet.width = 30;
-        this.bullet.height = 10;
-        this.offsetFromCenter = this.bullet.width / 2;
-        this.topLeft = new Point(this.bullet.x - this.offsetFromCenter, this.bullet.y);
-        this.topRight = new Point(this.bullet.x + this.offsetFromCenter, this.bullet.y);
+    constructor(x, y) {
+        this.sprite = Sprite.from('assets/bullet.png');
+        this.sprite.anchor.set(0.5);
+        this.sprite.x = x;
+        this.sprite.y = y;
+        this.sprite.width = 30;
+        this.sprite.height = 10;
         
-        this.collision = new CollisionBox(this.bullet.x - (this.bullet.width / 2),
-                                          this.bullet.x + (this.bullet.width / 2),
-                                          this.bullet.y - (this.bullet.height / 2),
-                                          this.bullet.y + (this.bullet.height / 2));
+        this.offsetFromCenter = this.sprite.width / 2;
+        this.topLeft = new Point(this.sprite.x - this.offsetFromCenter, this.sprite.y);
+        this.topRight = new Point(this.sprite.x + this.offsetFromCenter, this.sprite.y);
         this.speed = 0;
         this.maxSpeed = 5;
     }
 
     changePos(x, y) {
-        this.bullet.x = x;
-        this.bullet.y = y;
+        this.sprite.x = x;
+        this.sprite.y = y;
     }
 
     moveUp() {
@@ -35,17 +30,21 @@ export class Bullet {
     }
 
     update(delta) {
-        this.bullet.y += this.speed * delta;
-        this.updatePoints();
+        this.sprite.y += this.speed * delta;
+        this.updateCollision();
     }
 
-    updatePoints() {
-        this.topLeft.set(this.bullet.x - this.offsetFromCenter, this.bullet.y);
-        this.topRight.set(this.bullet.x + this.offsetFromCenter, this.bullet.y);
+    updateCollision() {
+        this.topLeft.set(this.sprite.x - this.offsetFromCenter, this.sprite.y);
+        this.topRight.set(this.sprite.x + this.offsetFromCenter, this.sprite.y);
     }
 
-    getSprite() {
-        return this.bullet;
+    get sprite() {
+        return this._sprite;
+    }
+
+    set sprite(spr) {
+        this._sprite = spr;
     }
 
     get collision() {
