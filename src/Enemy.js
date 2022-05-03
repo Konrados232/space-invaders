@@ -1,8 +1,8 @@
-import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Sprite } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Enemy {
-    constructor(x, y, sprite) {
-        this.sprite = Sprite.from('assets/a.png');
+    constructor(x, y) {
+        this.sprite = Sprite.from('../assets/a.png');
         this.sprite.anchor.set(0.5);
         this.sprite.x = x;
         this.sprite.y = y;

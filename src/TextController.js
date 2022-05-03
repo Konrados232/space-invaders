@@ -1,4 +1,4 @@
-import { Text } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Text } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class TextController {
     constructor(x, y) {

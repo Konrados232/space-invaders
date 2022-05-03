@@ -1,8 +1,8 @@
-import { Sprite, Point } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Sprite, Point } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class Bullet {
     constructor(x, y) {
-        this.sprite = Sprite.from('assets/bullet.png');
+        this.sprite = Sprite.from('../assets/bullet.png');
         this.sprite.anchor.set(0.5);
         this.sprite.x = x;
         this.sprite.y = y;

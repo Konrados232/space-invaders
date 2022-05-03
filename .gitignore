@@ -45,10 +45,6 @@ pixi.code-workspace
 # webdoc api
 dist/docs/pixi.api.json
 
-# temporary
-assets/
-pixi.js
-bump.js
 
 .vscode
 notes.txt

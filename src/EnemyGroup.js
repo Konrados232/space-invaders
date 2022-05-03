@@ -1,4 +1,4 @@
-import { Container, Point, Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Container, Point, Sprite } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 export class EnemyGroup {
     constructor(x, y, leftBorder, rightBorder) {
@@ -19,7 +19,7 @@ export class EnemyGroup {
         this.direction = 1;
 
         for (let i = 0; i < this.maxEnemyCount; i++) {
-            const enemy = Sprite.from('assets/a.png');
+            const enemy = Sprite.from('../assets/a.png');
             enemy.anchor.set(0);
             enemy.x = i * 125;
             enemy.y = 0;

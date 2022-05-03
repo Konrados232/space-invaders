@@ -1,4 +1,4 @@
-import { Application, Sprite, Graphics, Container, Text } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Application, Sprite, Graphics, Container, Text } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 import { Player } from './Player.js';
 import { Batch } from './Batch.js';
@@ -14,8 +14,9 @@ const app = new Application({
 document.body.appendChild(app.view);
 
 // load data
-const playerSprite = Sprite.from('assets/sample.png');
-const defaultSprite = Sprite.from('assets/a.png');
+const playerSprite = Sprite.from('../assets/sample.png');
+const defaultSprite = Sprite.from('../assets/a.png');
+const backgroundSprite = Sprite.from('../assets/background.png');
 const response = await fetch('gameEndText.txt');
 const data = await response.text();
 
@@ -23,7 +24,7 @@ const data = await response.text();
 const player = new Player(app.screen.width / 2, app.screen.height - 45, playerSprite);
 const bulletController = new Batch(20, defaultSprite);
 const enemyGroupController = new EnemyGroupController(0, 0, 75, 3);
-const background = new Background();
+const background = new Background(backgroundSprite);
 const scoreText = new TextController(10, 575);
 let endScreenText = new Text(data,{fontSize: 40,fill: 0x1010ff,wordWrap: true,wordWrapWidth: 180});
 endScreenText.x = 10;

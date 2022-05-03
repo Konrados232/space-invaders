@@ -1,4 +1,4 @@
-import { Graphics, Container } from './node_modules/pixi.js/dist/browser/pixi.mjs';
+import { Graphics, Container } from '../node_modules/pixi.js/dist/browser/pixi.mjs';
 
 
 export class FrameText {
