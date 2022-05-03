@@ -7,8 +7,6 @@ import { Background } from './Background.js';
 import { TextController } from './TextController.js';
 import { FrameText } from './FrameText.js';
 
-import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
-
 const app = new Application({
     width: 800, height: 600, backgroundColor: 0x5c5c5c
 });
@@ -117,12 +115,8 @@ function checkEveryBulletCollision(enemyGroup) {
 
 
 function isObjectInsideContainer(bulletTopLeft, bulletTopRight, containerBottomLeft, containerBottomRight) {
-    if (bulletTopLeft.y <= containerBottomLeft.y) {
-        if (bulletTopLeft.x >= containerBottomLeft.x || bulletTopRight.x <= containerBottomRight) {
-            return true;
-        }
-    }
-    return false;
+    return (bulletTopLeft.y <= containerBottomLeft.y) &&
+            (bulletTopLeft.x >= containerBottomLeft.x || bulletTopRight.x <= containerBottomRight);
 }
 
 
