@@ -51,7 +51,7 @@ export class EnemyGroup {
     deleteEnemy(enemy) {
         this.currentEnemyCount--;
         this.enemyList.pop(enemy);
-        this.container.removeChild(enemy.getSprite());
+        this.container.removeChild(enemy.sprite);
     }
 
     get container() {

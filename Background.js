@@ -3,8 +3,6 @@ import { Sprite } from './node_modules/pixi.js/dist/browser/pixi.mjs';
 export class Background {
     constructor() {
         this.sprite = Sprite.from('assets/background.png')
-        //this.sprite.height = 1920;
-        //this.sprite.width = 1058;
         this.sprite.x = 400;
         this.sprite.y = 300;
         this.sprite.anchor.set(0.5);
