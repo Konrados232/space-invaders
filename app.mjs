@@ -5,8 +5,7 @@ import { Batch } from './Batch.js';
 import { EnemyGroupController } from './EnemyGroupController.js';
 import { Background } from './Background.js';
 import { TextController } from './TextController.js';
-import { InputController } from './InputController.js';
-
+import { FrameText } from './FrameText.js';
 
 import * as PIXI from './node_modules/pixi.js/dist/browser/pixi.mjs';
 
@@ -16,9 +15,11 @@ const app = new Application({
 
 document.body.appendChild(app.view);
 
-// load sprites
+// load data
 const playerSprite = Sprite.from('assets/sample.png');
 const defaultSprite = Sprite.from('assets/a.png');
+const response = await fetch('gameEndText.txt');
+const data = await response.text();
 
 // load objects
 const player = new Player(app.screen.width / 2, app.screen.height - 45, playerSprite);
@@ -26,53 +27,22 @@ const bulletController = new Batch(20, defaultSprite);
 const enemyGroupController = new EnemyGroupController(0, 0, 75, 3);
 const background = new Background();
 const scoreText = new TextController(10, 575);
-const inputController = new InputController(player);
+let endScreenText = new Text(data,{fontSize: 40,fill: 0x1010ff,wordWrap: true,wordWrapWidth: 180});
+endScreenText.x = 10;
+
+const endCredits = new FrameText(endScreenText, 10, 10, 10);
+endCredits.setDefaultProperties();
 
 // load sprites on stage
 app.stage.addChild(background.sprite);
-
 app.stage.addChild(player.sprite);
-
 enemyGroupController.enemyGroupList.forEach(element => {
     app.stage.addChild(element.container);
 });
-
-console.log(scoreText.text);
-
 app.stage.addChild(scoreText.text);
 
 
-// end credits
-let frame = new Graphics();
-frame.beginFill(0x666666);
-frame.lineStyle({ color: 0xffffff, width: 4, alignment: 0 });
-frame.drawRect(0, 0, 208, 208);
-frame.position.set(400 - 100, 300 - 100);
-
-let mask = new Graphics();
-mask.beginFill(0xffffff);
-mask.drawRect(0,0,200,200);
-mask.endFill();
-
-let maskContainer = new Container();
-maskContainer.mask = mask;
-maskContainer.addChild(mask);
-maskContainer.position.set(4,4);
-
-const response = await fetch('gameEndText.txt');
-const data = await response.text();
-
-let endScreenText = new Text(
-    data,
-    {
-      fontSize: 40,
-      fill: 0x1010ff,
-      wordWrap: true,
-      wordWrapWidth: 180
-    }
-);
-endScreenText.x = 10;
-
+// game logic
 let elapsed = 0.0;
 
 // update logic
@@ -92,13 +62,12 @@ app.ticker.add((delta) => {
 
     // check game logic
     if (enemyGroupController.isEmpty()) {
-        app.stage.addChild(frame);
-        frame.addChild(maskContainer);
-        maskContainer.addChild(endScreenText);
+        app.stage.addChild(endCredits.frame);
+        endCredits.frame.addChild(endCredits.maskContainer);
+        endCredits.maskContainer.addChild(endScreenText);
 
         elapsed += delta;
-        endScreenText.y = -450 + Math.cos(elapsed / 100.0) * 450.0;
-
+        endCredits.updateText(elapsed);
     }
 
     // check out of the box objects
@@ -171,7 +140,6 @@ function resetBullet(element) {
     element.stop();
     element.changePos(-100,-100);
 }
-
 
 function shoot(coords) {
     let x = coords[0];
